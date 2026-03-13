@@ -1,72 +1,492 @@
-:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-body { margin: 0; background: #0b0f14; color: #e8eef6; }
-a { color: inherit; text-decoration: none; }
+/* =========================================================
+   What’s the Werd — Studious Theme (FULL CSS)
+   Includes: modern “studious” UI + your reference wave band
+   + subtle motion (slow wave drift)
+   Drop-in replacement for src/styles.css
+   ========================================================= */
 
-.container { max-width: 920px; margin: 0 auto; padding: 24px; }
-.header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.title { margin: 0; font-size: 22px; letter-spacing: 0.3px; }
+/* ---------- Theme tokens ---------- */
+:root{
+  /* Paper + ink */
+  --paper-0:#fbf6ef;
+  --paper-1:#f3eadf;
+  --paper-2:#e9ddcf;
 
-.nav { display: flex; gap: 12px; }
-.nav a { opacity: 0.8; padding: 6px 10px; border-radius: 10px; }
-.nav a.active { opacity: 1; background: rgba(255,255,255,0.08); }
+  --ink:#2a241e;
+  --ink-2:#4a4138;
+  --muted:#6c6257;
+
+  /* Accents */
+  --sage:#5f7a62;
+  --sage-2:#3f5f46;
+  --sage-soft:#d7e1d7;
+
+  --gold:#c8b16a;
+  --gold-2:#9c874b;
+
+  --ui:#ece1d4;
+  --ui-2:#e4d7c8;
+  --border:rgba(45, 35, 24, 0.18);
+
+  --shadow: 0 18px 45px rgba(43, 32, 20, 0.18);
+  --shadow-soft: 0 10px 30px rgba(43, 32, 20, 0.12);
+
+  --r-xl: 22px;
+  --r-lg: 18px;
+  --r-md: 14px;
+
+  --ring: rgba(95, 122, 98, 0.28);
+
+  /* Fonts (system-only “studious”) */
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Layout knobs */
+  --page-max: 980px;
+
+  /* Wave knobs (tweak these if needed) */
+  --wave-top: 170px;      /* where the wave band begins */
+  --wave-height: 220px;   /* height of the band */
+  --wave-shadow-top: calc(var(--wave-top) + var(--wave-height) - 10px);
+}
+
+*{ box-sizing:border-box; }
+
+html, body { height:100%; }
+
+body{
+  margin:0;
+  color:var(--ink);
+  font-family: var(--font-sans);
+  letter-spacing: 0.1px;
+  overflow-x: hidden;
+
+  /* Paper gradient background */
+  background:
+    linear-gradient(
+      180deg,
+      var(--paper-0) 0%,
+      var(--paper-0) 55%,
+      var(--paper-1) 100%
+    );
+  position: relative;
+}
+
+/* Optional: tighten default typography */
+p { line-height: 1.55; }
+
+a{ color: inherit; text-decoration:none; }
+
+/* =========================================================
+   BACKGROUND: Wave band + subtle motion (CSS-only)
+   ========================================================= */
+
+/* Subtle horizontal drift */
+@keyframes waveShift {
+  from { mask-position: 0 0; -webkit-mask-position: 0 0; }
+  to   { mask-position: 100% 0; -webkit-mask-position: 100% 0; }
+}
+
+/* The wave band itself */
+body::before{
+  content:"";
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--wave-top);
+  height: var(--wave-height);
+  z-index: -1;
+
+  background-color: var(--sage);
+
+  /* Mask creates sine-like bumps (repeat-x) */
+  mask-image:
+    radial-gradient(120px 80px at 0% 50%, black 60%, transparent 61%),
+    radial-gradient(140px 90px at 20% 40%, black 60%, transparent 61%),
+    radial-gradient(160px 100px at 40% 55%, black 60%, transparent 61%),
+    radial-gradient(140px 90px at 60% 45%, black 60%, transparent 61%),
+    radial-gradient(160px 100px at 80% 50%, black 60%, transparent 61%),
+    radial-gradient(120px 80px at 100% 45%, black 60%, transparent 61%);
+
+  mask-size: 20% 100%;
+  mask-repeat: repeat-x;
+
+  -webkit-mask-image:
+    radial-gradient(120px 80px at 0% 50%, black 60%, transparent 61%),
+    radial-gradient(140px 90px at 20% 40%, black 60%, transparent 61%),
+    radial-gradient(160px 100px at 40% 55%, black 60%, transparent 61%),
+    radial-gradient(140px 90px at 60% 45%, black 60%, transparent 61%),
+    radial-gradient(160px 100px at 80% 50%, black 60%, transparent 61%),
+    radial-gradient(120px 80px at 100% 45%, black 60%, transparent 61%);
+
+  -webkit-mask-size: 20% 100%;
+  -webkit-mask-repeat: repeat-x;
+
+  /* Subtle motion */
+  animation: waveShift 90s linear infinite;
+}
+
+/* Soft shadow under wave (depth) */
+body::after{
+  content:"";
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--wave-shadow-top);
+  height: 44px;
+  z-index: -2;
+
+  background: radial-gradient(
+    60% 100% at 50% 0%,
+    rgba(0, 0, 0, 0.18),
+    transparent 70%
+  );
+}
+
+/* =========================================================
+   APP LAYOUT
+   ========================================================= */
+
+.container{
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 26px 18px 64px;
+}
+
+/* Header */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 14px;
+  padding: 10px 6px 18px;
+  border-bottom: 1px solid rgba(45, 35, 24, 0.10);
+}
+
+.brand{
+  display:flex;
+  align-items:flex-start;
+  gap: 12px;
+}
+
+.logoDot{
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.75), transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(200,177,106,0.50), transparent 55%),
+    linear-gradient(135deg, rgba(95,122,98,0.85), rgba(200,177,106,0.65));
+  box-shadow: 0 8px 18px rgba(43, 32, 20, 0.14);
+  border: 1px solid rgba(45,35,24,0.18);
+  margin-top: 2px;
+}
+
+.title{
+  margin:0;
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  font-size: 28px;
+  color: var(--ink);
+}
+
+.subtitle{
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.nav{
+  display:flex;
+  gap: 14px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+
+.nav a{
+  padding: 8px 10px;
+  border-radius: 999px;
+  color: var(--ink-2);
+  opacity: 0.85;
+  border: 1px solid transparent;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, opacity 120ms ease;
+}
+
+.nav a:hover{
+  background: rgba(255,255,255,0.35);
+  border-color: rgba(45,35,24,0.10);
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+.nav a.active{
+  opacity: 1;
+  border-color: rgba(200,177,106,0.55);
+  background: linear-gradient(180deg, rgba(200,177,106,0.20), rgba(255,255,255,0.35));
+}
+
+/* =========================================================
+   CARDS / SECTIONS
+   ========================================================= */
 
 .main { margin-top: 18px; }
-.card {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 16px;
-  padding: 18px;
+
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.52), rgba(255,255,255,0.34));
+  border: 1px solid rgba(45, 35, 24, 0.14);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-.row { display: flex; gap: 10px; align-items: center; margin: 12px 0; }
-.row.wrap { flex-wrap: wrap; }
-.inline { display: flex; gap: 8px; align-items: center; }
-.pill { padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.08); }
+.card > * { padding: 18px; }
 
-input, textarea, select {
+.card h2{
+  margin: 0 0 8px;
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  font-size: 26px;
+  color: var(--ink);
+}
+
+.muted{ color: var(--muted); }
+
+/* Utility row */
+.row{
+  display:flex;
+  gap: 12px;
+  align-items:center;
+  margin: 12px 0;
+}
+.row.wrap{ flex-wrap: wrap; }
+
+/* =========================================================
+   FORMS / INPUTS
+   ========================================================= */
+
+label{
+  display:block;
+  color: var(--muted);
+  font-size: 14px;
+  margin: 12px 0;
+}
+
+.inline{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+input, textarea, select{
   width: 100%;
-  background: rgba(0,0,0,0.25);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 12px;
-  padding: 10px 12px;
-  color: #e8eef6;
+  border-radius: var(--r-md);
+  padding: 11px 12px;
+  border: 1px solid rgba(45,35,24,0.16);
+  background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.38));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+  color: var(--ink);
+  outline: none;
+  transition: box-shadow 120ms ease, border-color 120ms ease;
 }
-label { display: block; margin: 10px 0; }
-.form label input, .form label textarea { margin-top: 6px; }
 
-.btn {
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.14);
-  color: #e8eef6;
-  padding: 10px 12px;
-  border-radius: 12px;
+label > input, label > textarea, label > select { margin-top: 7px; }
+
+input:focus, textarea:focus, select:focus{
+  border-color: rgba(95,122,98,0.55);
+  box-shadow: 0 0 0 4px var(--ring), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+
+/* Buttons */
+.btn{
+  border-radius: var(--r-md);
+  padding: 10px 16px;
+  border: 1px solid rgba(45,35,24,0.20);
+  background: linear-gradient(180deg, rgba(105,138,109,0.95), rgba(78,110,84,0.95));
+  color: #f4f0e8;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  box-shadow: 0 8px 18px rgba(63,95,70,0.22);
   cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+  white-space: nowrap;
 }
-.btn.secondary { background: rgba(255,255,255,0.06); }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.list { display: grid; gap: 10px; margin-top: 12px; }
-.listItem { padding: 12px; border-radius: 14px; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.08); }
-.listTitle { font-weight: 700; margin-bottom: 6px; }
-.meta { display: flex; gap: 10px; margin-top: 8px; opacity: 0.75; font-size: 12px; }
-.muted { opacity: 0.8; }
+.btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+.btn:active{ transform: translateY(0px); filter: brightness(0.98); }
+.btn:disabled{ opacity: 0.65; cursor: not-allowed; box-shadow: none; }
 
-.prompt { padding: 14px; border-radius: 14px; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.08); margin-top: 14px; }
-.promptText { font-size: 20px; font-weight: 700; margin-top: 6px; }
+.btn.secondary{
+  background: linear-gradient(180deg, rgba(255,255,255,0.54), rgba(255,255,255,0.28));
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+}
 
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-.choice {
-  text-align: left;
+/* Pills */
+.pill{
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(45,35,24,0.14);
+  background: rgba(255,255,255,0.30);
+  color: var(--ink-2);
+  font-weight: 700;
+}
+
+/* Feedback */
+.feedback{
+  margin-top: 14px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(95,122,98,0.30);
+  background: linear-gradient(180deg, rgba(95,122,98,0.28), rgba(95,122,98,0.20));
+  color: #f6f2ea;
+  font-weight: 900;
+  padding: 12px 14px;
+}
+
+.error{ color: #b4233c; font-weight: 700; }
+.success{ color: #1e6b3f; font-weight: 800; }
+
+/* =========================================================
+   LIBRARY LIST
+   ========================================================= */
+
+.list{
+  display:grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.listItem{
   padding: 14px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #e8eef6;
-  cursor: pointer;
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(45,35,24,0.14);
+  background: rgba(255,255,255,0.22);
+  box-shadow: var(--shadow-soft);
 }
-.choice:disabled { opacity: 0.7; cursor: not-allowed; }
 
-.feedback { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.08); }
+.listTitle{
+  font-family: var(--font-serif);
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
 
-.error { color: #ff7b7b; }
-.success { color: #7bffb2; }
+.meta{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* =========================================================
+   GAME UI
+   ========================================================= */
+
+.prompt{
+  padding: 14px 18px;
+  border-top: 1px solid rgba(45,35,24,0.12);
+  background: rgba(255,255,255,0.16);
+}
+
+.promptText{
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-top: 6px;
+  color: var(--ink);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 18px 18px;
+}
+
+.choice{
+  text-align:center;
+  padding: 12px 14px;
+  min-height: 54px;
+
+  border-radius: var(--r-md);
+  border: 1px solid rgba(45,35,24,0.16);
+  background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(240,232,222,0.58));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  color: var(--ink);
+  font-weight: 800;
+  letter-spacing: 0.15px;
+  cursor: pointer;
+
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.choice:hover{
+  transform: translateY(-1px);
+  border-color: rgba(200,177,106,0.55);
+  background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(240,232,222,0.62));
+}
+
+.choice:disabled{
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform:none;
+}
+
+/* Timer (used by your GamePage.tsx classes) */
+.timerWrap{
+  display:flex;
+  align-items:center;
+  gap: 14px;
+  padding: 10px 18px 2px;
+}
+
+.timerBar{
+  flex: 1;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.10);
+  border: 1px solid rgba(45,35,24,0.18);
+  overflow:hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.10);
+}
+
+.timerFill{
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  background:
+    linear-gradient(90deg,
+      rgba(95,122,98,0.95),
+      rgba(200,177,106,0.95),
+      rgba(200,177,106,0.75)
+    );
+}
+
+.timerNum{
+  min-width: 56px;
+  text-align:right;
+  font-family: var(--font-serif);
+  font-weight: 900;
+  font-size: 34px;
+  color: rgba(42,36,30,0.78);
+  letter-spacing: 1px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 740px){
+  .title{ font-size: 24px; }
+  .subtitle{ font-size: 13px; }
+  .nav{ gap: 10px; }
+}
+
+@media (max-width: 640px){
+  .grid{ grid-template-columns: 1fr; }
+  .timerNum{ font-size: 28px; }
+}

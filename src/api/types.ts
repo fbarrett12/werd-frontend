@@ -3,7 +3,7 @@ export type Word = {
   text: string;
   definition: string;
   part_of_speech?: string | null;
-  difficulty?: number | null;
+  difficulty: number;
   approved: boolean;
   source: string;
 };
@@ -14,7 +14,7 @@ export type Session = {
   id: string;
   device_id: string;
   mode: QuizMode;
-  difficulty?: number | null;
+  difficulty: number;
   score: number;
   streak: number;
 };

@@ -38,7 +38,6 @@ export default function LibraryPage() {
             <div className="listTitle">{w.text}</div>
             <div className="muted">{w.definition}</div>
             <div className="meta">
-              {w.difficulty != null && <span>Difficulty: {w.difficulty}</span>}
               <span>Source: {w.source}</span>
             </div>
           </div>

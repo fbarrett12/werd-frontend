@@ -4,7 +4,6 @@ import type { Word } from "./types";
 export function createWord(input: {
   text: string;
   definition: string;
-  difficulty?: number | null;
   part_of_speech?: string | null;
 }): Promise<Word> {
   return apiFetch<Word>("/api/words", {

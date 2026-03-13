@@ -8,7 +8,14 @@ export default function App() {
   return (
     <div className="container">
       <header className="header">
-        <h1 className="title">What’s the Werd</h1>
+        <div className="brand">
+          <div className="logoDot" />
+          <div>
+            <h1 className="title">Verba</h1>
+            <div className="subtitle">Slang library + quiz game</div>
+          </div>
+        </div>
+
         <nav className="nav">
           <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>Welcome</NavLink>
           <NavLink to="/library" className={({ isActive }) => (isActive ? "active" : "")}>Library</NavLink>

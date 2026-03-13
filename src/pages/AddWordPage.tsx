@@ -5,14 +5,12 @@ import { createWord } from "../api/words.ts";
 export default function AddWordPage() {
   const [text, setText] = useState("");
   const [definition, setDefinition] = useState("");
-  const [difficulty, setDifficulty] = useState<number | "">("");
 
   const mutation = useMutation({
     mutationFn: createWord,
     onSuccess: () => {
       setText("");
       setDefinition("");
-      setDifficulty("");
     },
   });
 
@@ -21,7 +19,6 @@ export default function AddWordPage() {
     mutation.mutate({
       text,
       definition,
-      difficulty: difficulty === "" ? null : difficulty,
     });
   };
 
@@ -42,18 +39,6 @@ export default function AddWordPage() {
             onChange={(e) => setDefinition(e.target.value)}
             placeholder="About to do something..."
             rows={4}
-          />
-        </label>
-
-        <label>
-          Difficulty (optional)
-          <input
-            type="number"
-            min={1}
-            max={10}
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value === "" ? "" : Number(e.target.value))}
-            placeholder="1-10"
           />
         </label>
 
